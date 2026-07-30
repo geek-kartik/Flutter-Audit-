@@ -14,10 +14,11 @@ class ConsoleReporter implements Reporter {
     final categories = [
       'Dependencies',
       'Assets',
-      'Architecture',
       'Performance',
       'Directory',
       'Pubspec',
+      'Licenses',
+      'Flutter',
     ];
 
     for (final category in categories) {
@@ -68,10 +69,6 @@ class ConsoleReporter implements Reporter {
       _writeln('  ✓ ${metrics["packageCount"]} packages declared', sink: sink);
     } else if (category == 'Assets' && metrics.containsKey('assetCount')) {
       _writeln('  ✓ ${metrics["assetCount"]} asset files scanned', sink: sink);
-    } else if (category == 'Architecture' && metrics.containsKey('dartFileCount')) {
-      _writeln(
-          '  ✓ ${metrics["dartFileCount"]} Dart files analysed (${metrics["totalLoc"] ?? 0} LOC)',
-          sink: sink);
     }
   }
 
