@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:args/command_runner.dart';
+import 'package:flutter_audit/commands/architecture_command.dart';
 import 'package:flutter_audit/commands/assets_command.dart';
 import 'package:flutter_audit/commands/audit_command.dart';
 import 'package:flutter_audit/commands/dependencies_command.dart';
@@ -14,6 +15,7 @@ Future<void> main(List<String> args) async {
     ..addCommand(AuditCommand())
     ..addCommand(AssetsCommand())
     ..addCommand(DependenciesCommand())
+    ..addCommand(ArchitectureCommand())
     ..addCommand(PerformanceCommand());
 
   // Support running global flags or empty command by defaulting to `audit`

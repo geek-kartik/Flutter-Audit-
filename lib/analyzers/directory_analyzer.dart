@@ -27,22 +27,6 @@ class DirectoryAnalyzer implements Analyzer {
       ));
     }
 
-    // 2. Duplicate filenames
-    scan.duplicateFilenames.forEach((filename, paths) {
-      issues.add(Issue(
-        id: 'duplicate_filename',
-        title: 'Duplicate Filename: "$filename"',
-        description:
-            'Multiple files with identical name "$filename" exist at: [${paths.join(', ')}].',
-        severity: Severity.info,
-        category: 'Directory',
-        filePath: paths.first,
-        recommendation:
-            'Rename files to avoid ambiguity in imports or asset lookups.',
-        scorePenalty: 1,
-      ));
-    });
-
     // 3. Temporary files
     for (final tempFile in scan.temporaryFiles) {
       issues.add(Issue(

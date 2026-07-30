@@ -14,6 +14,7 @@ class ConsoleReporter implements Reporter {
     final categories = report.activeCategories ?? [
       'Dependencies',
       'Assets',
+      'Architecture',
       'Performance',
       'Directory',
       'Pubspec',

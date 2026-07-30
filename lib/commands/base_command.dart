@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:args/command_runner.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import '../analyzers/base_analyzer.dart';
 import '../models/issue.dart';
 import '../models/project.dart';
 import '../models/report.dart';
 import '../reporters/console_reporter.dart';
+import '../reporters/csv_reporter.dart';
 import '../reporters/json_reporter.dart';
 import '../reporters/markdown_reporter.dart';
 import '../scanners/asset_scanner.dart';
@@ -35,6 +37,12 @@ abstract class BaseAuditCommand extends Command<int> {
       help: 'Generate Markdown audit report.',
       negatable: false,
     );
+    argParser.addFlag(
+      'csv',
+      abbr: 'c',
+      help: 'Output report in CSV format.',
+      negatable: false,
+    );
     argParser.addOption(
       'output',
       abbr: 'o',
@@ -54,6 +62,7 @@ abstract class BaseAuditCommand extends Command<int> {
     final targetPath = p.canonicalize(argResults?['path'] as String? ?? '.');
     final isJson = argResults?['json'] as bool? ?? false;
     final isMarkdown = argResults?['markdown'] as bool? ?? false;
+    final isCsv = argResults?['csv'] as bool? ?? false;
     final outputPath = argResults?['output'] as String?;
 
     final pubspecFile = File(p.join(targetPath, 'pubspec.yaml'));
@@ -66,7 +75,36 @@ abstract class BaseAuditCommand extends Command<int> {
       Logger.info('Scanning Flutter project at "$targetPath"...');
     }
 
-    // 1. Run Scanners
+    final report = await buildReport(targetPath);
+
+    // Render Output
+    IOSink? fileSink;
+    if (outputPath != null) {
+      final outputFile = File(outputPath);
+      fileSink = outputFile.openWrite();
+    }
+
+    if (isJson) {
+      const JsonReporter().report(report, sink: fileSink);
+    } else if (isCsv) {
+      const CsvReporter().report(report, sink: fileSink);
+    } else if (isMarkdown) {
+      const MarkdownReporter().report(report, sink: fileSink);
+    } else {
+      const ConsoleReporter().report(report, sink: fileSink);
+    }
+
+    if (fileSink != null) {
+      await fileSink.flush();
+      await fileSink.close();
+      Logger.success('Report successfully written to $outputPath');
+    }
+
+    return 0;
+  }
+
+  @protected
+  Future<Report> buildReport(String targetPath) async {
     final pubspecInfo = await PubspecScanner().scan(targetPath);
     final assets = await AssetScanner().scan(targetPath, pubspecInfo);
     final dartFiles = await DartFileScanner().scan(targetPath);
@@ -80,14 +118,12 @@ abstract class BaseAuditCommand extends Command<int> {
       directoryScan: directoryScan,
     );
 
-    // 2. Run Analyzers
     final issues = <Issue>[];
     for (final analyzer in getAnalyzers()) {
       final results = await analyzer.analyze(project);
       issues.addAll(results);
     }
 
-    // 3. Compute Metrics
     final totalLoc = dartFiles.fold<int>(0, (sum, f) => sum + f.lineCount);
     final metrics = <String, dynamic>{
       'packageCount': pubspecInfo.dependencies.length,
@@ -97,7 +133,7 @@ abstract class BaseAuditCommand extends Command<int> {
       'totalLoc': totalLoc,
     };
 
-    final report = Report(
+    return Report(
       projectName: pubspecInfo.name,
       projectPath: targetPath,
       timestamp: DateTime.now(),
@@ -105,36 +141,5 @@ abstract class BaseAuditCommand extends Command<int> {
       metrics: metrics,
       activeCategories: getActiveCategories(),
     );
-
-    // 4. Render Output
-    IOSink? fileSink;
-    if (outputPath != null) {
-      final outputFile = File(outputPath);
-      fileSink = outputFile.openWrite();
-    }
-
-    if (isJson) {
-      const JsonReporter().report(report, sink: fileSink);
-    } else if (isMarkdown) {
-      const MarkdownReporter().report(report, sink: fileSink);
-      if (outputPath == null) {
-        // Default to audit_report.md if requested via markdown flag without explicit output file
-        final defaultMdFile = File(p.join(targetPath, 'audit_report.md'));
-        await defaultMdFile.writeAsString(
-          const MarkdownReporter().generateMarkdown(report),
-        );
-        Logger.success('Markdown report generated at audit_report.md');
-      }
-    } else {
-      const ConsoleReporter().report(report, sink: fileSink);
-    }
-
-    if (fileSink != null) {
-      await fileSink.flush();
-      await fileSink.close();
-      Logger.success('Report successfully written to $outputPath');
-    }
-
-    return 0;
   }
 }

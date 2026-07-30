@@ -31,7 +31,7 @@ void main() {
           title: 'Unused screen.dart',
           description: 'Unused dart file',
           severity: Severity.warning,
-          category: 'Directory',
+          category: 'Architecture',
           scorePenalty: 3,
         ),
       ];
