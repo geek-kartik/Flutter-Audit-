@@ -19,4 +19,7 @@ class AssetsCommand extends BaseAuditCommand {
       PubspecAnalyzer(),
     ];
   }
+
+  @override
+  List<String> getActiveCategories() => ['Assets', 'Pubspec'];
 }

@@ -19,4 +19,7 @@ class DependenciesCommand extends BaseAuditCommand {
       PubspecAnalyzer(),
     ];
   }
+
+  @override
+  List<String> getActiveCategories() => ['Dependencies', 'Pubspec'];
 }

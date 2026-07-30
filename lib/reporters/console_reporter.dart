@@ -11,7 +11,7 @@ class ConsoleReporter implements Reporter {
   void report(Report report, {IOSink? sink}) {
     Logger.header('Flutter Audit Report: ${report.projectName}', sink: sink);
 
-    final categories = [
+    final categories = report.activeCategories ?? [
       'Dependencies',
       'Assets',
       'Performance',

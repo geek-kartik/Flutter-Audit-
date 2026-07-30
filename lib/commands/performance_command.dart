@@ -17,4 +17,7 @@ class PerformanceCommand extends BaseAuditCommand {
       PerformanceAnalyzer(),
     ];
   }
+
+  @override
+  List<String> getActiveCategories() => ['Performance'];
 }

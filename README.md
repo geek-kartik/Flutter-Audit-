@@ -7,10 +7,10 @@ A modular, extensible, and completely offline Dart CLI tool that scans Flutter p
 - 📦 **Unused Dependencies**: Scans `pubspec.yaml` and source imports to flag unused packages.
 - 🎨 **Unused & Duplicate Assets**: Computes SHA256 hashes to find duplicate assets and AST analysis to detect unused images/icons/fonts.
 - 🐘 **Large Assets & Performance**: Identifies oversized images, vector SVGs, JSON/Lottie files, and heavy font families.
-- 🕸️ **Unused Dart Files & Graph Analysis**: Builds an import graph starting from `lib/main.dart` to find unreachable source files.
-- 🏛️ **Architecture Warnings**: Detects huge widgets (>100 LOC), massive classes, long functions, constructor parameter smells, excessive public members, and deep widget tree nesting.
+- 🪪 **License Compliance**: Checks for a project LICENSE file and scans pub cache for dependency license declarations.
+- 📈 **Flutter Upgrade Suggestions**: Detects current Flutter SDK version, channel, and SDK constraint; flags non-stable channels and outdated versions.
 - 📁 **Directory & Pubspec Hygiene**: Identifies empty folders, duplicate filenames, temporary files (`.DS_Store`), backup files, and broken pubspec asset/font paths.
-- 💯 **Project Health Score**: Calculates a baseline score out of 100 with weighted issue penalties.
+- 💯 **Project Health Score**: Calculates a weighted score out of 100 using diminishing returns so scores never bottom out at zero.
 - 📄 **Multiple Report Formats**: Supports interactive colored terminal output, JSON export, and Markdown report generation (`audit_report.md`).
 - 🔒 **100% Offline**: Requires zero internet APIs, cloud calls, pub.dev queries, or vulnerability lookup services.
 
@@ -48,9 +48,6 @@ flutter_audit assets
 
 # Scan dependencies only
 flutter_audit dependencies
-
-# Scan architecture and unused files only
-flutter_audit architecture
 
 # Scan performance bottlenecks only
 flutter_audit performance
@@ -90,7 +87,8 @@ flutter_audit/
 │   │   ├── base_analyzer.dart
 │   │   ├── dependency_analyzer.dart
 │   │   ├── asset_analyzer.dart
-│   │   ├── architecture_analyzer.dart
+│   │   ├── license_analyzer.dart
+│   │   ├── flutter_upgrade_analyzer.dart
 │   │   ├── performance_analyzer.dart
 │   │   ├── directory_analyzer.dart
 │   │   └── pubspec_analyzer.dart
@@ -99,7 +97,6 @@ flutter_audit/
 │   │   ├── audit_command.dart
 │   │   ├── assets_command.dart
 │   │   ├── dependencies_command.dart
-│   │   ├── architecture_command.dart
 │   │   └── performance_command.dart
 │   ├── models/
 │   │   ├── project.dart
@@ -108,6 +105,7 @@ flutter_audit/
 │   │   ├── severity.dart
 │   │   ├── asset_info.dart
 │   │   ├── dart_file_info.dart
+│   │   ├── directory_info.dart
 │   │   └── pubspec_info.dart
 │   ├── reporters/
 │   │   ├── console_reporter.dart

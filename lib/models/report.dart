@@ -11,12 +11,17 @@ class Report {
   final List<Issue> issues;
   final Map<String, dynamic> metrics;
 
+  /// If set, only these categories are shown by reporters.
+  /// When null, all categories with issues or metrics are shown.
+  final List<String>? activeCategories;
+
   const Report({
     required this.projectName,
     required this.projectPath,
     required this.timestamp,
     required this.issues,
     required this.metrics,
+    this.activeCategories,
   });
 
   /// Calculates the project health score from 0 to 100 based on issue score penalties.

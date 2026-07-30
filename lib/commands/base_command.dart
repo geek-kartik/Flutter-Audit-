@@ -45,6 +45,10 @@ abstract class BaseAuditCommand extends Command<int> {
   /// List of analyzers to run for this command.
   List<Analyzer> getAnalyzers();
 
+  /// Category names to show in output. Override in subcommands to scope output.
+  /// Returns null to show all categories (used by [AuditCommand]).
+  List<String>? getActiveCategories() => null;
+
   @override
   Future<int> run() async {
     final targetPath = p.canonicalize(argResults?['path'] as String? ?? '.');
@@ -99,6 +103,7 @@ abstract class BaseAuditCommand extends Command<int> {
       timestamp: DateTime.now(),
       issues: issues,
       metrics: metrics,
+      activeCategories: getActiveCategories(),
     );
 
     // 4. Render Output

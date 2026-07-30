@@ -41,7 +41,7 @@ class MarkdownReporter implements Reporter {
     buffer.writeln('| Total Lines of Code | `${report.metrics["totalLoc"] ?? 0}` |');
     buffer.writeln();
 
-    final categories = [
+    final categories = report.activeCategories ?? [
       'Dependencies',
       'Assets',
       'Performance',
