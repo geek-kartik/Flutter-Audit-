@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:meta/meta.dart';
 import 'issue.dart';
 import 'severity.dart';
@@ -21,10 +20,12 @@ class Report {
   });
 
   /// Calculates the project health score from 0 to 100 based on issue score penalties.
+  /// Uses diminishing returns so score never reaches 0 in practice.
   int get healthScore {
     final totalPenalty =
         issues.fold<int>(0, (sum, issue) => sum + issue.scorePenalty);
-    return max(0, 100 - totalPenalty);
+    if (totalPenalty <= 0) return 100;
+    return (10000 / (100 + totalPenalty)).round();
   }
 
   /// Filter issues by category.

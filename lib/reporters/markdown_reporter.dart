@@ -44,10 +44,11 @@ class MarkdownReporter implements Reporter {
     final categories = [
       'Dependencies',
       'Assets',
-      'Architecture',
       'Performance',
       'Directory',
       'Pubspec',
+      'Licenses',
+      'Flutter',
     ];
 
     for (final cat in categories) {

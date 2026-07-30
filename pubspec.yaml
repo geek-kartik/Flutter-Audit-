@@ -1,5 +1,5 @@
 name: flutter_audit
-description: A modular offline CLI tool that scans Flutter projects for unused dependencies, assets, unused files, architecture warnings, and performance bottlenecks.
+description: A modular offline CLI tool that scans Flutter projects for unused dependencies, assets, unused files, and performance bottlenecks.
 version: 1.0.0
 repository: https://github.com/flutter_audit/flutter_audit
 

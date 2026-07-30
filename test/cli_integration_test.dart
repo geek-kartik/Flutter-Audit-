@@ -91,7 +91,7 @@ class OrphanScreen {}
       final auditCommand = AuditCommand();
       final runner = auditCommand.getAnalyzers();
 
-      expect(runner.length, equals(6));
+      expect(runner.length, equals(7));
     });
   });
 }
