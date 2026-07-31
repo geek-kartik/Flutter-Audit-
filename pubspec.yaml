@@ -15,6 +15,9 @@ dependencies:
   path: ^1.9.0
   yaml: ^3.1.2
 
+executables:
+  flutter_audit: flutter_audit
+
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.25.0

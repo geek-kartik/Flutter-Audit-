@@ -28,8 +28,68 @@ class AuditCommand extends BaseAuditCommand {
   final String description =
       'Scans Flutter project and runs all audit analyzers (dependencies, assets, architecture, performance, directory, pubspec, licenses, flutter upgrade).';
 
+  AuditCommand() {
+    argParser.addFlag('dependencies',
+        help: 'Audit dependencies only.', negatable: false);
+    argParser.addFlag('assets', help: 'Audit assets only.', negatable: false);
+    argParser.addFlag('architecture',
+        help: 'Audit architecture only.', negatable: false);
+    argParser.addFlag('performance',
+        help: 'Audit performance only.', negatable: false);
+    argParser.addFlag('directory',
+        help: 'Audit directory hygiene only.', negatable: false);
+    argParser.addFlag('pubspec', help: 'Audit pubspec only.', negatable: false);
+    argParser.addFlag('licenses', help: 'Audit licenses only.', negatable: false);
+    argParser.addFlag('flutter',
+        help: 'Audit Flutter upgrade suggestions only.', negatable: false);
+  }
+
+  /// Category names selected via flags (e.g. `--performance`, `--dependencies`).
+  List<String> _selectedCategories() {
+    final selected = <String>[];
+    const flags = [
+      ('dependencies', 'Dependencies'),
+      ('assets', 'Assets'),
+      ('architecture', 'Architecture'),
+      ('performance', 'Performance'),
+      ('directory', 'Directory'),
+      ('pubspec', 'Pubspec'),
+      ('licenses', 'Licenses'),
+      ('flutter', 'Flutter'),
+    ];
+    for (final (flag, category) in flags) {
+      if (argResults?[flag] as bool? ?? false) {
+        selected.add(category);
+      }
+    }
+    return selected;
+  }
+
   @override
   List<Analyzer> getAnalyzers() {
+    final selected = _selectedCategories();
+    if (selected.isEmpty) return _allAnalyzers();
+
+    final byCategory = <String, Analyzer>{
+      'Dependencies': DependencyAnalyzer(),
+      'Assets': AssetAnalyzer(),
+      'Architecture': ArchitectureAnalyzer(),
+      'Performance': PerformanceAnalyzer(),
+      'Directory': DirectoryAnalyzer(),
+      'Pubspec': PubspecAnalyzer(),
+      'Licenses': LicenseAnalyzer(),
+      'Flutter': FlutterUpgradeAnalyzer(),
+    };
+    return [for (final category in selected) byCategory[category]!];
+  }
+
+  @override
+  List<String>? getActiveCategories() {
+    final selected = _selectedCategories();
+    return selected.isEmpty ? null : selected;
+  }
+
+  List<Analyzer> _allAnalyzers() {
     return [
       DependencyAnalyzer(),
       AssetAnalyzer(),
