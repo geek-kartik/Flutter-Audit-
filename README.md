@@ -14,33 +14,76 @@ A modular, extensible, and completely offline Dart CLI tool that scans Flutter p
 - 📄 **Multiple Report Formats**: Supports interactive colored terminal output, JSON export, and Markdown report generation (`audit_report.md`).
 - 🔒 **100% Offline**: Requires zero internet APIs, cloud calls, pub.dev queries, or vulnerability lookup services.
 
-## Installation
+## Prerequisites
 
-Activate globally or run using `dart run`:
+- **Dart SDK 3.0+** (bundled with Flutter) — verify with `dart --version`
+- **Flutter** (recommended) — verify with `flutter --version`
+
+## 👤 For Users
+
+### Installation
+
+The package must be reachable from your machine. Choose one option:
+
+**Option A — activate directly from git** (recommended; no publishing required):
+
+```bash
+dart pub global activate --source git https://github.com/geek-kartik/Flutter-Audit-.git
+```
+
+**Option B — clone and activate locally**:
+
+```bash
+git clone https://github.com/geek-kartik/Flutter-Audit-.git
+cd Flutter-Audit-
+dart pub global activate --source path .
+```
+
+**Option C — from pub.dev** (once the package is published):
 
 ```bash
 dart pub global activate flutter_audit
 ```
 
-Or run directly from source:
+### CLI Usage
+
+#### Check the installed version
 
 ```bash
-dart run bin/flutter_audit.dart
+flutter_audit --version
+# → flutter_audit 1.0.0
 ```
 
-## CLI Usage
+#### Audit Complete Project
 
-### Audit Complete Project
 Run all analyzers on the current directory. This also generates `audit_report.md` in the project root with a timestamp refreshed on every run:
+
 ```bash
 flutter_audit audit
 ```
+
 Or target a specific Flutter project directory:
+
 ```bash
 flutter_audit audit --path /path/to/flutter_project
 ```
 
-### Subcommands
+#### Category Flags
+
+`flutter_audit audit` accepts flags to scope the audit to specific categories. Combine flags to run multiple categories at once:
+
+| Flag | Category |
+| --- | --- |
+| `--dependencies` | Unused dependencies |
+| `--assets` | Unused/duplicate assets |
+| `--architecture` | Unreachable files, huge widgets/classes |
+| `--performance` | Large assets, deep widget trees |
+| `--directory` | Directory hygiene |
+| `--pubspec` | Pubspec hygiene |
+| `--licenses` | License compliance |
+| `--flutter` | Flutter upgrade suggestions |
+
+#### Subcommands
 
 ```bash
 # Scan assets only
@@ -53,7 +96,7 @@ flutter_audit dependencies
 flutter_audit performance
 ```
 
-### Report Formats & Output
+#### Report Formats & Output
 
 ```bash
 # Generate JSON output
@@ -71,7 +114,38 @@ Notes on generated files:
 - `flutter_audit audit --markdown` writes a Markdown report (with audit timestamp) to `audit_report.md` by default.
 - `flutter_audit performance` only creates `performance_audit.csv` when performance issues are found (skipped when the audit is clean).
 
-## Architecture & Extensibility
+## 👨‍💻 For Developers
+
+### Getting Started
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/geek-kartik/Flutter-Audit-.git
+cd Flutter-Audit-
+dart pub get
+```
+
+Run the CLI from source:
+
+```bash
+dart run bin/flutter_audit.dart audit
+dart run bin/flutter_audit.dart audit --performance
+```
+
+Run the test suite:
+
+```bash
+dart test
+```
+
+Run static analysis:
+
+```bash
+dart analyze
+```
+
+### Architecture & Extensibility
 
 `flutter_audit` is designed according to SOLID principles. Custom analyzers can be added by implementing the `Analyzer` abstract contract:
 
@@ -81,58 +155,16 @@ abstract class Analyzer {
 }
 ```
 
-### Package Structure
+### Contributing
 
-```
-flutter_audit/
-├── bin/
-│   └── flutter_audit.dart
-├── lib/
-│   ├── flutter_audit.dart
-│   ├── analyzers/
-│   │   ├── base_analyzer.dart
-│   │   ├── dependency_analyzer.dart
-│   │   ├── asset_analyzer.dart
-│   │   ├── architecture_analyzer.dart
-│   │   ├── license_analyzer.dart
-│   │   ├── flutter_upgrade_analyzer.dart
-│   │   ├── performance_analyzer.dart
-│   │   ├── directory_analyzer.dart
-│   │   └── pubspec_analyzer.dart
-│   ├── commands/
-│   │   ├── base_command.dart
-│   │   ├── audit_command.dart
-│   │   ├── architecture_command.dart
-│   │   ├── assets_command.dart
-│   │   ├── dependencies_command.dart
-│   │   └── performance_command.dart
-│   ├── models/
-│   │   ├── project.dart
-│   │   ├── report.dart
-│   │   ├── issue.dart
-│   │   ├── severity.dart
-│   │   ├── asset_info.dart
-│   │   ├── dart_file_info.dart
-│   │   ├── directory_info.dart
-│   │   └── pubspec_info.dart
-│   ├── reporters/
-│   │   ├── console_reporter.dart
-│   │   ├── csv_reporter.dart
-│   │   ├── json_reporter.dart
-│   │   ├── markdown_reporter.dart
-│   │   └── reporter.dart
-│   ├── scanners/
-│   │   ├── pubspec_scanner.dart
-│   │   ├── import_scanner.dart
-│   │   ├── asset_scanner.dart
-│   │   ├── dart_file_scanner.dart
-│   │   └── directory_scanner.dart
-│   └── utils/
-│       ├── config.dart
-│       ├── extensions.dart
-│       └── logger.dart
-└── test/
-```
+Contributions are welcome! To get started:
+
+1. **Fork** the repository and create a feature branch.
+2. Make your changes, following the existing code style and adding tests where appropriate.
+3. Run `dart analyze` and `dart test` to make sure everything passes.
+4. Open a **pull request** describing your changes.
+
+Areas that benefit from contributions: new analyzers, additional report formats, performance improvements, and documentation.
 
 ## License
 

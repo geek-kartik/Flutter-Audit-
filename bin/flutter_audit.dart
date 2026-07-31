@@ -7,7 +7,15 @@ import 'package:flutter_audit/commands/dependencies_command.dart';
 import 'package:flutter_audit/commands/performance_command.dart';
 import 'package:flutter_audit/utils/logger.dart';
 
+const _version = '1.0.0';
+
 Future<void> main(List<String> args) async {
+  if (args.contains('--version') || args.contains('-v')) {
+    // ignore: avoid_print
+    print('flutter_audit $_version');
+    return;
+  }
+
   final runner = CommandRunner<int>(
     'flutter_audit',
     'A modular, extensible, offline Flutter project auditing CLI tool.',
