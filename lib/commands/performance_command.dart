@@ -43,12 +43,14 @@ class PerformanceCommand extends BaseAuditCommand {
     final infos = report.issuesForSeverity(Severity.info).length;
     Logger.info('Performance audit: $warnings warnings, $errors errors, $infos info. Health score: ${report.healthScore}/100');
 
-    final csvFile = File(p.join(targetPath, 'performance_audit.csv'));
-    final sink = csvFile.openWrite();
-    const CsvReporter().report(report, sink: sink);
-    await sink.flush();
-    await sink.close();
-    Logger.success('Performance report saved to performance_audit.csv');
+    if (report.issues.isNotEmpty) {
+      final csvFile = File(p.join(targetPath, 'performance_audit.csv'));
+      final sink = csvFile.openWrite();
+      const CsvReporter().report(report, sink: sink);
+      await sink.flush();
+      await sink.close();
+      Logger.success('Performance report saved to performance_audit.csv');
+    }
 
     return 0;
   }

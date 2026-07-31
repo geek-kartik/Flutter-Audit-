@@ -89,7 +89,32 @@ class AuditCommand extends BaseAuditCommand {
       Logger.success('Report successfully written to $outputPath');
     }
 
+    if (!isJson && !isCsv && !isMarkdown && outputPath == null) {
+      await _writeConsoleReportToMarkdown(targetPath, report);
+    }
+
     return 0;
+  }
+
+  /// Writes the console report output into `audit_report.md` with a current timestamp.
+  Future<void> _writeConsoleReportToMarkdown(String targetPath, Report report) async {
+    final reportFile = File(p.join(targetPath, 'audit_report.md'));
+    final sink = reportFile.openWrite();
+    Logger.enableColors = false;
+    try {
+      sink.writeln('# Flutter Audit Report');
+      sink.writeln();
+      sink.writeln('```');
+      sink.writeln('Generated at: ${DateTime.now().toIso8601String()}');
+      sink.writeln();
+      const ConsoleReporter().report(report, sink: sink);
+      sink.writeln('```');
+    } finally {
+      Logger.enableColors = true;
+    }
+    await sink.flush();
+    await sink.close();
+    Logger.success('Audit report saved to ${reportFile.path}');
   }
 
   Future<Report> _extractToCsv(Report report, String category, String targetPath, String csvFilename) async {

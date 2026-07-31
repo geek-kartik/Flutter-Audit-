@@ -31,7 +31,7 @@ dart run bin/flutter_audit.dart
 ## CLI Usage
 
 ### Audit Complete Project
-Run all analyzers on the current directory:
+Run all analyzers on the current directory. This also generates `audit_report.md` in the project root with a timestamp refreshed on every run:
 ```bash
 flutter_audit audit
 ```
@@ -59,12 +59,17 @@ flutter_audit performance
 # Generate JSON output
 flutter_audit audit --json
 
-# Generate Markdown report (audit_report.md)
+# Generate Markdown report (audit_report.md) with a timestamp
 flutter_audit audit --markdown
 
 # Output report to custom file path
 flutter_audit audit --json --output build/audit.json
 ```
+
+Notes on generated files:
+- `flutter_audit audit` always writes an `audit_report.md` with a `Generated at` timestamp reflecting when the report was last updated.
+- `flutter_audit audit --markdown` writes a Markdown report (with audit timestamp) to `audit_report.md` by default.
+- `flutter_audit performance` only creates `performance_audit.csv` when performance issues are found (skipped when the audit is clean).
 
 ## Architecture & Extensibility
 
@@ -83,10 +88,12 @@ flutter_audit/
 ├── bin/
 │   └── flutter_audit.dart
 ├── lib/
+│   ├── flutter_audit.dart
 │   ├── analyzers/
 │   │   ├── base_analyzer.dart
 │   │   ├── dependency_analyzer.dart
 │   │   ├── asset_analyzer.dart
+│   │   ├── architecture_analyzer.dart
 │   │   ├── license_analyzer.dart
 │   │   ├── flutter_upgrade_analyzer.dart
 │   │   ├── performance_analyzer.dart
@@ -95,6 +102,7 @@ flutter_audit/
 │   ├── commands/
 │   │   ├── base_command.dart
 │   │   ├── audit_command.dart
+│   │   ├── architecture_command.dart
 │   │   ├── assets_command.dart
 │   │   ├── dependencies_command.dart
 │   │   └── performance_command.dart
@@ -109,8 +117,10 @@ flutter_audit/
 │   │   └── pubspec_info.dart
 │   ├── reporters/
 │   │   ├── console_reporter.dart
+│   │   ├── csv_reporter.dart
 │   │   ├── json_reporter.dart
-│   │   └── markdown_reporter.dart
+│   │   ├── markdown_reporter.dart
+│   │   └── reporter.dart
 │   ├── scanners/
 │   │   ├── pubspec_scanner.dart
 │   │   ├── import_scanner.dart
